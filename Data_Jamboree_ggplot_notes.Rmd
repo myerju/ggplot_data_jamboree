@@ -1,8 +1,11 @@
 ---
 title: "Data Jamboree- ggplot2 with Presenter Notes"
-output: pdf_document
+output: html_document
 ---
 #Data Jamboree INTRODUCTION
+
+**Getting Started Slide will start on screen**
+
 Alison:
 - Introduce ggplot
 - Goals for the day (learning four types of plots)
@@ -12,122 +15,169 @@ Alison:
 
 #Begin Live Coding: 
 Alison:
--Reminder to download R, RStudio, and packages
+- Remind people how to download R, RStudio, and packages
+
+##Setup
 
 ###Import packages (once per machine)
-```{r}
-#install.packages("readr", "ggplot2", "ggbeeswarm")
+```{r install_packages}
+#install.packages("readr")
+#install.packages("ggplot2")
+#install.packages("ggbeeswarm") 
+#install.packages("dplyr")
+#install.packages("MASS")
+#install.packages("hexbin")
 ```
 
 ###Load packages (once per R session)
-```{r}
+```{r load_packages}
 library(readr)
 library(ggplot2)
 library(ggbeeswarm)
+library(dplyr)
+library(MASS)
+library(hexbin)
 ```
 
 ###Import data (readr)
-We will be using a little bit of R to get started. We want to assign the data file to an R object using (<-). This imports our data and gives us the ability to call the data easily.
 
-```{r}
+We will be using a little bit of R to get started. We want to **assign the data file to an R object using (<-)**. This imports our data and gives us the ability to call the data easily.
+
+```{r import_data}
 heart <- read_csv("http://faculty.washington.edu/kenrice/heartgraphs/nhaneslarge.csv", na=".") #na= tells R that . is an na value
 ```
 
-To take a quick look at our data, run the command head() and check with your partner to see if you got the same output. The number of columns will change based on the width of your screen, but you should get the same dimension label at the top.
-```{r}
+
+To take a quick look at our data, **run the command head ( ) and check with your partner to see if you got the same output**. The number of columns will change based on the width of your screen, but you should get the same dimension label at the top.
+```{r head}
 head(heart)
 ```
 
-###Basic ggplot Anatomy
-Let's start using ggplot2 to make some simple graphs. The code we use for ggplot is made of **layers**. It creates graphs by **layering imformation on top of an empty graph.**
-```{r}
+**PASS TO JULIANNE**
+
+# Univariate Plots: Folate intake by gender
+
+## Basic ggplot Anatomy
+Let's start using ggplot2 to make some simple graphs. The code we use for ggplot is made of **layers**. It creates graphs by **layering imformation on top of an empty graph.** Let's try the basic ggplot command to see how this works.
+
+```{r basic_ggplot}
 ggplot(heart, aes(x=DR1TFOLA)) 
 #This says we want ggplot to use the data.frame heart and to plot DR1TFOLA on the x-axis.
 ```
 
 We see that the command for ggplot does actually create a plot, but without any layers, it doesn't know how you want to plot your data.
 
-Say that we want to make a histogram plot. We start with our ggplot command and add a geom layer by using the **+** sign.
+## Histogram
+Say that we want to make a histogram plot. We start with our ggplot command and **add a geom layer** by using the **+** sign.
 
 *histogram definition: a diagram consisting of rectangles whose area is proportional to the frequency of a variable and whose width is equal to the class interval*
 
-```{r}
+```{r histogram}
 ggplot(heart, aes(x=DR1TFOLA)) +
   geom_histogram()
 ```
 
-So same as before we said "ggplot, use the data.frame heart, make a plot with DR1TFOLA on the x-axis and now plot the frequency of DR1TFOLA by using a histogram type plot". What a good listener ggplot is!
+So same as before we said "ggplot, use the data.frame heart, make a plot with DR1TFOLA on the x-axis and now plot the frequency of DR1TFOLA by using a histogram type plot on top". What a good listener ggplot is!
 
-Some of you may have been wondering what "DR1TFOLA" is. We find out by looking at the dataset that it means **folate intake**. Let's update the x-axis with this information so we know what we are looking at.
 
-```{r}
+### Labels
+
+Some of you may have been wondering what "DR1TFOLA" is. We find out by looking at the dataset that it means **folate intake**. Let's **update the x-axis label** with this information so we know what we are looking at.
+
+```{r change_folate_label}
 ggplot(heart, aes(x=DR1TFOLA)) +
   geom_histogram() +
   labs(x = "Folate intake") #x-axis label
 ```
 
+### Changing Colors
+
 One of ggplot's great features is that you can customize your plot to look exactly the way you picture it in your head. We can start with changing some colors.
 
-First, the outline of the bars by using colour in the geom_histogram layer.
-```{r}
+First, we will change the outline of the bars by using **colour** in the **geom_histogram** layer.
+```{r histogram_outline}
 ggplot(heart, aes(x=DR1TFOLA)) +
   geom_histogram(colour = "white") + 
   labs(x = "Folate intake")
 ```
 
-We can also change the fill of the bars by using fill in the geom_histogram layer. 
-```{r}
+We can also change the fill of the bars by using **fill** in the **geom_histogram** layer. 
+```{r histogram_fill}
 ggplot(heart, aes(x=DR1TFOLA)) +
   geom_histogram(colour = "white", fill = "peachpuff") + #yes, that is a name of a color
   labs(x = "Folate intake")
 ```
 
-Color settings will change a little bit for each type of graph. Make sure reference your documentation to make sure you're changing the right type of color. For example, here colour for outlines, and fill for inside color. When in doubt, look up the documentation by typing "?command".
+### Documentation and the Help Command
 
-Now, R has been bugging us about the binwidth of our histogram by telling us "## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`." This just tells us that this is a default that ggplot chose for us. Defaults are in most commands for ggplot. It chose these because it believes it makes the most sense. It wants to make this whole plotting this really easy for you. You can always look up the documentation to see what the defaults are and change them to your liking. 
+Color settings will change a little bit for each type of graph. Make sure reference your documentation to make sure you're changing the right type of color. For example, here colour for outlines, and fill for inside color. **When in doubt, look up the documentation by typing "?command".**
 
-For now, we will change the binwidth to 50. Feel free to play around with this. You can change this to any number.  
+```{r help}
+?geom_histogram
+```
 
-```{r}
+### Histogram Bins and ggplot Defaults
+
+Now, R has been bugging us about the number of bins in our histogram by telling us 
+```{r error}
+# `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+This just tells us that this is a default that ggplot chose for us. **Defaults are in most commands for ggplot. However, they are sensible, meaning that ggplot chose them because it believes the default value makes the most sense given the data.** It wants to make this whole plotting this really easy for you. You can always look up the documentation to see what the defaults are and change them to your liking. In fact, I recommend that.
+
+For now, we will **change the amount of bins to 50**. Feel free to play around with this. You can change this to any number.  
+
+```{r histogram_bin}
 ggplot(heart, aes(x=DR1TFOLA)) + 
   geom_histogram(colour = "white", fill = "peachpuff", bins = 50)
 ```
 
-Now that we know how to create a basic histogram, we can add another dimension to our plot. We can create separate graphs based on gender by adding something called a facet_wrap. We add in our facet wrap as a layer with the "+" sign once again. 
+### Facet Wrap
+
+Now that we know how to create a basic histogram, **we can add another dimension to our plot**. We can create separate graphs based on gender by adding something called a facet_wrap. We add in our facet wrap as a layer with the "+" sign once again. 
 
 *Facet_wrap description: Most displays are roughly rectangular, so if you have a categorical variable with many levels, it doesn't make sense to try and display them all in one row (or one column). To solve this dilemma, facet_wrap wraps a 1d sequence of panels into 2d, making best use of screen real estate.*
 
-```{r}
+```{r histogram_facet}
 ggplot(heart, aes(x = DR1TFOLA)) +
   geom_histogram(colour = "white", fill = "peachpuff", bins = 50) +
   labs(x = "Folate intake") +
   facet_wrap(~gender)
 ```
 
-Say that we want our plot to give us the kernal density instead. 
+
+## Density Plot
+
+Say that we want our plot the exact same plot, but we want it to give us the kernal density instead. 
+
+Easy, **change the geom_histogram layer to geom_density**. Make sure to take out the bin specification as a density plot doesn't have visible bins.
 
 *Kernal Density Estimation definition: kernel density estimation (KDE) is a non-parametric way to estimate the probability density function of a random variable. Kernel density estimation is a fundamental data smoothing problem where inferences about the population are made, based on a finite data sample.*
 
-```{r}
+```{r density_facet}
 ggplot(heart, aes(x = DR1TFOLA)) +
   geom_density(colour = "white", fill = "peachpuff") +
   labs(x = "Folate intake") +
   facet_wrap(~gender)
 ```
 
-Alright, now that our plots are smoothed out, we may decide that we'd like to see these plots on the same graph. However, we want to keep all of the dimensions that we've been plotting out (folate, density, and gender). We can do this by differentiating by color on the geom level in its aesthetics. Its a bit complicated to explain, but much easier to understand when you see it. So let's try this out.  
+### Adding a third dimension onto one plot
 
-```{r}
+Alright, now that our plots are smoothed out, we may decide that we'd like to see these plots on the same graph. However, we want to keep all of the dimensions that we've been plotting out (folate, density, and gender). We can do this by **differentiating by color on the geom level in its aesthetics**. Its a bit complicated to explain, but much easier to understand when you see it. So let's try this out.  
+
+```{r density}
 ggplot(heart, aes(x = DR1TFOLA)) +
   geom_density(aes(colour = gender)) + #Notice moving the colour into aesthetics
   labs(x = "Folate intake") 
 ```
 
-Remeber from before colour = the outline. So our density plots aren't filled yet. 
+Remeber from before colour = the outline. So our density plots aren't filled yet. But ggplot very nicely gave us a **legend on the side**.
 
-We can also make this exact same graph by adding colour into our main level aesthetics. We'll get into the difference between this in a little bit. For now, let's replicate our previous graph.
+We can also make this exact same graph by adding colour into our main level aesthetics. We'll get into the difference between this in a little bit. For now, let's replicate our previous graph. 
 
-```{r}
+**NOTE TO ALISON: should we take this one out and you can explain it later with the more complicated graphs?**
+
+```{r density_rep}
 ggplot(heart, aes(x = DR1TFOLA, colour = gender)) +
   geom_density() +
   labs(x = "Folate intake") 
@@ -135,93 +185,96 @@ ggplot(heart, aes(x = DR1TFOLA, colour = gender)) +
 
 # Univariate Plots: Systolic blood pressure by gender
 
+##Dotplot - Stripchart
+
 Alright, let's start our next plot type by exploring dot plots. We will create a simple stripchart of `BPXSAR`(or systolic blood pressure) by gender. 
 
-We'll start with the same basic structure from above, 
+We'll start with the same basic structure from above, but this time we will do geom_ point instead of a geom_ histogram or a geom_ density. 
 
-"ggplot(data, aesthetics (x and y axis)) + add our layer on top to get our dotplot", but this time we will do geom_ point instead of a geom_ histogram or a geom_ density. 
-
-```{r}
+```{r dotplot}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_point() 
 ```
 
-As you can see, there are way too many points to understand what this is trying to say. We can add an alpha in the geom layer to make our points more transparent.
+### Customizing our Dotplot 
 
-```{r}
+As you can see, there are way too many points to understand what this is trying to say. We can **add an alpha in the geom layer to make our points more transparent**. Alpha works on a scale from 0 (clear) to 1 (opaque).
+
+```{r alpha}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_point(alpha = .1)
 ```
 
 It's still a bit hard to interpret so we can add jitter to space out our points. 
 
-```{r}
+```{r jitter}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_jitter(alpha = .1)
 ```
 
-Alright, so we can see all of our points now, but the start to get a little mixed up with each other. We can change the width and the height of our jitter. First, we should think a bit about what jitter does? It spaces things out and can introduce some noise to our plot. Since our x-axis is a categorical variable we won't be adding too much noise on our x axis, but our y-axis is continuous so jitter there will really mess up our graph. 
+Alright, so we can see all of our points now, but the start to get a little mixed up with each other. **Jitter automatically adds space to both the height and the width of your plots.** 
+
+First, we should think a bit about what jitter does? It spaces things out and can introduce some noise to our plot. **Since our x-axis is a categorical variable we won't be adding too much noise on our x axis, but our y-axis is continuous so jitter there will really mess up our graph.** 
 
 Feel free to play around with this to see how your graph changes.
 
-```{r}
+```{r jitter_width}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_jitter(alpha = .1, width = .5, height = 0)
 ```
 
-Now we should can add a title on our x-axis and we have a readable plot!
+Now if we change our y-axis label we will have a readable plot! We are going to make x-axis blank by putting empty quotation marks because male and female is clear enough to not need the title gender. Just a bit more practice in customizing your plot.
 
-```{r}
+```{r y_axis_bp}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_jitter(alpha = .1, width = .5, height = 0) +
-  labs(x = "Systolic BP (mmHg)", y = "")
+  labs(x = "", y = "Systolic BP (mmHg)")
 ```
 
-Say we want to look at this same type of plot but as a beeswarm. We copy and paste our same code from the dot plot we made above, but we replace geom_ jitter with geom_ beeswarm.
+### Beeswarm Plot
+
+We're going to give a quick intro to the beeswarm plot. Once again, to avoid overlapping points we'll add some alpha.
 
 *Beeswarm plot definiton: bee swarm plot is a one-dimensional scatter plot like "stripchart", but with closely-packed, non-overlapping points*
 
-```{r}
-ggplot(heart, aes(x = gender, y = BPXSAR)) +
-  geom_beeswarm()+
-  labs(x = "Systolic BP (mmHg)", y = "")
-```
-
-Once again, our points seem to overlap each other a bit, so let's add some alpha again. We'll add in in our beeswarm layer. 
-
-```{r}
+```{r beeswarm}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_beeswarm(alpha = .2) +
   labs(x = "Systolic BP (mmHg)", y = "")
 ```
 
-ggplot doesn't just make plots, you can also add statistics on top of your plots. Say we want to see where the mean and the 95% confidence interval are in our plots. We will add a new layer for each by using stat_summary. Now the language here gets a bit more complicated but what we are telling R to do is to give us the mean, what type of geom it should be, and what color it should be. 
+
+#### Stats layers
+
+ggplot doesn't just make plots, **you can also add statistics on top of your plots**. Say we want to see where the mean is in our plots. We will add a new layer by using the command stat_summary. **Now the language here gets a bit more complicated but what we are telling R to do is to give us the mean, what type of geom it should be, and what color it should be.** 
 
 Play around with your colors too!
 
-**ALISON: Hmisc package required for this ci function** 
-```{r}
+```{r beeswarm_mean}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_beeswarm(alpha = .2) +
   stat_summary(fun.y = "mean", geom = "point", colour = "orange") +
-  stat_summary(fun.data = mean_cl_boot, geom = "linerange", colour = "orange") +
   labs(x = "Systolic BP (mmHg)", y = "")
 ```
 
-Ok, say instead of adding statistics on our plot, we want another plot type in there. We can also add that as a layer by using the + geom syntax. We'll add a boxplot in our beeswarm plot to give ourselves a better picture of our beeswarm. 
 
-Also, just a note to explain why we have outlier.shape = NA in our boxplot layer. A boxplot includes outliers as points. However, since we've already plotted all our points in the beeswarm, we don't need to plot them again in our boxplot. We'll get rid of them by making them equal to NA.
+### Layering geom types
 
-```{r}
+Ok, say instead of adding statistics on our plot, we want another plot type in there. We can also add that as a layer by using the "+ geom" syntax. **We'll add a boxplot in our beeswarm plot to give ourselves more information about the shape of data.** 
+
+**Also, just a note to explain why we have outlier.shape = NA in our boxplot layer.** A boxplot includes outliers as points. However, since we've already plotted all our points in the beeswarm, we don't need to plot them again in our boxplot. We'll get rid of them by making them equal to NA.
+
+```{r boxplot_beeswarm}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_boxplot(outlier.shape = NA) +
   geom_beeswarm(alpha = .2) +  
   labs(x = "Systolic BP (mmHg)", y = "")
 ```
 
-This brings us to the topic of layer order. ggplot plots its layers in the order that they are typed. For example, since our boxplot was typed before the beeswarm, the boxplot will be plotted first and the beeswarm will be plotted over it. Let's change the order to see how that effects our plot.
 
-```{r}
+This brings us to the topic of **layer order**. ggplot plots its layers in the order that they are typed. For example, since our boxplot was typed before the beeswarm, the boxplot will be plotted first and the beeswarm will be plotted over it. Let's change the order to see how that effects our plot.
+
+```{r beeswarm_boxplot}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_beeswarm(alpha = .2) +  
   geom_boxplot(outlier.shape = NA) +
@@ -230,19 +283,21 @@ ggplot(heart, aes(x = gender, y = BPXSAR)) +
 
 Now that plot is difficult to read because the boxplot was put over our beeswarm. 
 
+## Extra Challenge
 ###Violin plot
 
-Alright, now let's say that we want to do a violin plot instead of our boxplot. Easy, just replace geom_ boxplot with geom_ violin.
+If that was easy for you, give this a shot. Try and recreate the plots below using what you learned above.
 
-```{r}
+*Hint: We are using "geom_violin".*
+
+```{r violin, echo=FALSE}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_violin(alpha = .2) +
   labs(x = "Systolic BP (mmHg)", y = "")
 ```
 
-Just like before, we can add our statistics using stat_summary. Here we can add our mean and median. 
-
-```{r}
+Try adding some statistics to your plot. You can start with the mean and the median.
+```{r violin_stats, echo=FALSE}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_violin(alpha = .2) +
   stat_summary(fun.y = "mean", geom = "point", colour = "orange") +
@@ -250,9 +305,11 @@ ggplot(heart, aes(x = gender, y = BPXSAR)) +
   labs(x = "Systolic BP (mmHg)", y = "")
 ```
 
-You say you want a violin plot and a boxplot. Just add it as a layer. You can change the boxplot's size by specifying it's width. 
+Try adding another geom layer.
 
-```{r}
+*Hint: Do you want to include your outlier points?*
+
+```{r violin_boxplot, echo=FALSE}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_violin(alpha = .2) +
   geom_boxplot(width = .05) +
