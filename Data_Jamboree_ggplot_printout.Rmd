@@ -3,8 +3,12 @@ title: "Data Jamboree- ggplot2"
 output: html_document
 ---
 ```{r global_options, include=FALSE}
-knitr::opts_chunk$set(fig.show='hide')
+knitr::opts_chunk$set(fig.show='hide', warning=FALSE, message=FALSE)
 ```
+
+Link to paper on dataset: http://faculty.washington.edu/kenrice/heartgraphs/effectivegraphs.pdf
+
+Dataset url: http://faculty.washington.edu/kenrice/heartgraphs/
 
 ###Setup
 
@@ -19,7 +23,7 @@ install.packages("hexbin")
 ```
 
 ####Load packages (once per R session)
-```{r load_packages, message=FALSE}
+```{r load_packages}
 library(readr)
 library(ggplot2)
 library(ggbeeswarm)
@@ -39,7 +43,7 @@ heart <- read_csv("http://faculty.washington.edu/kenrice/heartgraphs/nhaneslarge
 
 
 - run the command head ( ) and check with your partner to see if you got the same output 
-```{r head}
+```{r head, eval=FALSE}
 head(heart)
 ```
 
@@ -73,7 +77,7 @@ ggplot(heart, aes(x=DR1TFOLA)) +
 #### Changing Colors
 
 change outline color
-```{r histogram_outline}
+```{r histogram_outline, warning=TRUE}
 ggplot(heart, aes(x=DR1TFOLA)) +
   geom_histogram(colour = "white") + 
   labs(x = "Folate intake")
@@ -136,15 +140,6 @@ ggplot(heart, aes(x = DR1TFOLA)) +
   labs(x = "Folate intake") 
 ```
 
-**NOTE TO ALISON: should we take this one out and you can explain it later with the more complicated graphs?**
-
-another way to make the same plot
-```{r density_rep}
-ggplot(heart, aes(x = DR1TFOLA, colour = gender)) +
-  geom_density() +
-  labs(x = "Folate intake") 
-```
-
 ## Univariate Plots: Systolic blood pressure by gender
 
 ###Dotplot - Stripchart
@@ -173,7 +168,9 @@ ggplot(heart, aes(x = gender, y = BPXSAR)) +
 ```
 
 Notes about Jitter:
+
 - jitter automatically adds space (noise) to both the height and the width of your plots
+
 - which variables won't be effected by noice - categorical
 
 change jitter to width only
@@ -237,14 +234,14 @@ If that was easy for you, give this a shot. Try and recreate the plots below usi
 
 *Hint: We are using "geom_violin".*
 
-```{r violin, echo=FALSE, fig.show='asis'}
+```{r violin, echo=FALSE, fig.show='asis', fig.height=3, fig.width=4}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_violin(alpha = .2) +
   labs(x = "Systolic BP (mmHg)", y = "")
 ```
 
 Try adding some statistics to your plot. You can start with the mean and the median.
-```{r violin_stats, echo=FALSE, fig.show='asis'}
+```{r violin_stats, echo=FALSE, fig.show='asis', fig.height=3, fig.width=4}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_violin(alpha = .2) +
   stat_summary(fun.y = "mean", geom = "point", colour = "orange") +
@@ -256,7 +253,7 @@ Try adding another geom layer.
 
 *Hint: Do you want to include your outlier points?*
 
-```{r violin_boxplot, echo=FALSE, fig.show='asis'}
+```{r violin_boxplot, echo=FALSE, fig.show='asis', fig.height=3, fig.width=4}
 ggplot(heart, aes(x = gender, y = BPXSAR)) +
   geom_violin(alpha = .2) +
   geom_boxplot(width = .05) +
@@ -355,5 +352,6 @@ ggplot(heart2, aes(x = BMXBMI, y = BPXSAR, colour = gender)) +
   labs(x = "Body Mass Index"~(kg/m^2), y = "Systolic BP (mmHg)") +
   scale_color_manual(values = my_colors, guide = FALSE)
 ```
+
 
 
